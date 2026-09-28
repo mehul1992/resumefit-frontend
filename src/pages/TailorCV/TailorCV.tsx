@@ -3,6 +3,7 @@ import PageMeta from "../../components/common/PageMeta";
 import PageBreadCrumb from "../../components/common/PageBreadCrumb";
 import { Modal } from "../../components/ui/modal";
 import { useModal } from "../../hooks/useModal";
+import { useTailoringSubmit } from "../../hooks/useTailoringSubmit";
 
 // ─── Step indicators ────────────────────────────────────────────────────────
 
@@ -291,7 +292,7 @@ export default function TailorCV() {
   const [file, setFile] = useState<File | null>(null);
   const [jd, setJd] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, error, submit, reset } = useTailoringSubmit();
 
   const canNext =
     (step === 1 && file !== null) ||
@@ -299,11 +300,20 @@ export default function TailorCV() {
     step === 3;
 
   const handleSubmit = async () => {
-    setLoading(true);
-    // API call will be wired up later
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
+    if (!file) return;
+    const job = await submit(file, jd);
+    if (!job) return;
     setSubmitted(true);
+  };
+
+  // An expired/rejected presigned URL can't be retried as-is — send the user
+  // back to step 1 so the next submit requests a fresh upload URL.
+  const handleErrorDismiss = () => {
+    if (error?.kind === "upload_failed") {
+      setFile(null);
+      setStep(1);
+    }
+    reset();
   };
 
   if (submitted) {
@@ -344,6 +354,31 @@ export default function TailorCV() {
           {step === 1 && <UploadCV file={file} onChange={setFile} />}
           {step === 2 && <JobDescription jd={jd} onChange={setJd} />}
           {step === 3 && file && <ReviewAndSubmit file={file} jd={jd} />}
+
+          {/* Submit error */}
+          {error && (
+            <div className="flex items-start gap-3 p-4 mt-6 text-sm rounded-xl border text-error-700 bg-error-50 border-error-200 dark:bg-error-500/15 dark:border-error-500/30 dark:text-error-400">
+              <svg className="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" clipRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-4.75a.75.75 0 001.5 0v-4.5a.75.75 0 00-1.5 0v4.5zm.75-7a.75.75 0 100 1.5.75.75 0 000-1.5z"/>
+              </svg>
+              <div className="flex-1">
+                <p>{error.message}</p>
+                {error.fieldErrors && error.fieldErrors.length > 0 && (
+                  <ul className="mt-1 list-disc list-inside text-xs">
+                    {error.fieldErrors.map((msg, i) => (
+                      <li key={i}>{msg}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <button
+                onClick={handleErrorDismiss}
+                className="shrink-0 text-xs font-semibold underline hover:no-underline"
+              >
+                {error.kind === "upload_failed" ? "Back to upload" : "Dismiss"}
+              </button>
+            </div>
+          )}
 
           {/* Navigation buttons */}
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">

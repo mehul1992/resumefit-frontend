@@ -23,6 +23,26 @@ const navItems: NavItem[] = [
       </svg>
     ),
   },
+  {
+    name: "Projects",
+    path: "/projects",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    name: "Processed Resumes",
+    path: "/resumes",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 3h7l4 4v12a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M13 3v4h4" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M8 12h6M8 15h6M8 9h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ];
 
 const AppSidebar: React.FC = () => {

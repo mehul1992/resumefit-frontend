@@ -7,6 +7,10 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import TailorCV from "./pages/TailorCV/TailorCV";
+import ProcessedResumes from "./pages/ProcessedResumes/ProcessedResumes";
+import ProjectsList from "./pages/Projects/ProjectsList";
+import ImportFromResume from "./pages/Projects/ImportFromResume";
+import UploadCsv from "./pages/Projects/UploadCsv";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 
@@ -25,6 +29,10 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route index path="/" element={<Home />} />
             <Route path="/tailor" element={<TailorCV />} />
+            <Route path="/projects" element={<ProjectsList />} />
+            <Route path="/projects/import-resume" element={<ImportFromResume />} />
+            <Route path="/projects/upload-csv" element={<UploadCsv />} />
+            <Route path="/resumes" element={<ProcessedResumes />} />
             <Route path="/blank" element={<Blank />} />
           </Route>
         </Route>
