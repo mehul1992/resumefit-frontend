@@ -24,4 +24,4 @@ services:
       # Baked into the bundle at build time — redeploy after changing it.
       # Update if your backend service got a different onrender.com hostname.
       - key: VITE_API_URL
-        value: https://resumefit-backend.onrender.com/api/v1
+        value: https://resumefit-backend-m9el.onrender.com/api/v1
