@@ -1,0 +1,27 @@
+services:
+  # Static site (free plan) — Vite builds to ./dist and Render serves it from its CDN.
+  - type: web
+    name: resumefit-frontend
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    # SPA fallback so react-router handles deep links like /projects/123 on refresh.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      # Vite fingerprints everything under /assets, so it's safe to cache forever.
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # Baked into the bundle at build time — redeploy after changing it.
+      # Update if your backend service got a different onrender.com hostname.
+      - key: VITE_API_URL
+        value: https://resumefit-backend.onrender.com/api/v1
