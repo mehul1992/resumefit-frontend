@@ -11,6 +11,9 @@ import ProcessedResumes from "./pages/ProcessedResumes/ProcessedResumes";
 import ProjectsList from "./pages/Projects/ProjectsList";
 import ImportFromResume from "./pages/Projects/ImportFromResume";
 import UploadCsv from "./pages/Projects/UploadCsv";
+import Profile from "./pages/Profile/Profile";
+import TailorResult from "./pages/TailorResult/TailorResult";
+import JobTracker from "./pages/JobTracker/JobTracker";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 
@@ -33,6 +36,9 @@ export default function App() {
             <Route path="/projects/import-resume" element={<ImportFromResume />} />
             <Route path="/projects/upload-csv" element={<UploadCsv />} />
             <Route path="/resumes" element={<ProcessedResumes />} />
+            <Route path="/resumes/:id" element={<TailorResult />} />
+            <Route path="/tracker" element={<JobTracker />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/blank" element={<Blank />} />
           </Route>
         </Route>

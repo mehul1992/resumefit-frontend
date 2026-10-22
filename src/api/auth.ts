@@ -20,6 +20,13 @@ export interface UserResponse {
   age: number | null;
   mobile_number: string | null;
   designation: string | null;
+  location: string | null;
+  linkedin_url: string | null;
+  // Short-lived presigned URL — refreshed from GET /users/me on app load.
+  avatar_url: string | null;
+  // False for Google-only accounts. Missing on users cached before this field
+  // existed — treat that as true until the next /users/me refresh.
+  has_password?: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -62,6 +69,13 @@ export const authApi = {
     request<LoginResponse>("/auth/login", {
       method: "POST",
       body: JSON.stringify(payload),
+    }),
+
+  // Exchanges a Google ID token for our session; creates the account on first use.
+  google: (credential: string) =>
+    request<LoginResponse>("/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ credential }),
     }),
 
   // Best-effort server logout. JWT is stateless, so we never block the

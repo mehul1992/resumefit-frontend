@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { UserResponse } from "../api/auth";
 import { authApi } from "../api/auth";
+import { usersApi, UsersError } from "../api/users";
 
 interface AuthState {
   user: UserResponse | null;
@@ -9,6 +10,7 @@ interface AuthState {
 
 interface AuthContextValue extends AuthState {
   setAuth: (user: UserResponse, token: string) => void;
+  updateUser: (user: UserResponse) => void;
   clearAuth: () => void;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -44,8 +46,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [auth]);
 
+  // The cached user can be stale (edited elsewhere, or an expired presigned
+  // avatar URL), so refresh it once per app load. Only an auth failure signs
+  // the user out — a network blip keeps the cached copy.
+  useEffect(() => {
+    const token = auth.token;
+    if (!token) return;
+    let cancelled = false;
+    usersApi
+      .getMe(token)
+      .then((user) => {
+        if (!cancelled) setAuthState((prev) => (prev.token === token ? { ...prev, user } : prev));
+      })
+      .catch((err) => {
+        if (!cancelled && err instanceof UsersError && err.kind === "unauthorized") {
+          setAuthState({ user: null, token: null });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per app load
+  }, []);
+
   const setAuth = (user: UserResponse, token: string) =>
     setAuthState({ user, token });
+
+  const updateUser = (user: UserResponse) =>
+    setAuthState((prev) => ({ ...prev, user }));
 
   const clearAuth = () => setAuthState({ user: null, token: null });
 
@@ -60,6 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         ...auth,
         setAuth,
+        updateUser,
         clearAuth,
         logout,
         isAuthenticated: !!auth.token,

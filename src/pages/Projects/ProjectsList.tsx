@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadCrumb from "../../components/common/PageBreadCrumb";
 import Badge from "../../components/ui/badge/Badge";
@@ -65,6 +65,15 @@ export default function ProjectsList() {
     setEditingProject(null);
     openModal();
   };
+
+  // Gap-analysis links on a tailored resume land here as /projects?new=1.
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("new") !== "1") return;
+    openAddModal();
+    setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- react to the query param only
+  }, [searchParams]);
 
   const openEditModal = (project: Project) => {
     setEditingProject(project);

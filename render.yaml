@@ -25,3 +25,7 @@ services:
       # Update if your backend service got a different onrender.com hostname.
       - key: VITE_API_URL
         value: https://resumefit-backend-m9el.onrender.com/api/v1
+      # Google sign-in OAuth client ID (same as the backend's GOOGLE_CLIENT_ID).
+      # Baked into the bundle at build time; the button is hidden while unset.
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false

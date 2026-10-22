@@ -20,6 +20,15 @@ vi.mock("../../api/projects", async () => {
   };
 });
 
+// AuthProvider refreshes the user on mount; keep that off the network.
+vi.mock("../../api/users", async () => {
+  const actual = await vi.importActual<typeof import("../../api/users")>("../../api/users");
+  return {
+    ...actual,
+    usersApi: { ...actual.usersApi, getMe: vi.fn(() => new Promise(() => {})) },
+  };
+});
+
 const mockedUseProjects = vi.mocked(useProjects);
 const mockedDeleteProject = vi.mocked(projectsApi.deleteProject);
 
@@ -109,6 +118,9 @@ describe("ProjectsList", () => {
         age: null,
         mobile_number: null,
         designation: null,
+        location: null,
+        linkedin_url: null,
+        avatar_url: null,
         is_active: true,
         created_at: "2026-01-01T00:00:00Z",
         updated_at: "2026-01-01T00:00:00Z",

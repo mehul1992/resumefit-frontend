@@ -15,21 +15,88 @@ interface UploadUrlResponse {
   object_key: string;
 }
 
+export type JobStage = "saved" | "applied" | "interview" | "offer" | "rejected";
+
+export interface TrackerLink {
+  id: number;
+  stage: JobStage;
+}
+
 // The list endpoint returns everything create-job does, plus presigned
 // download links (tailored_resume_download_url is null until completed).
+// role/company/match_score are null for runs that predate the analysis.
 export interface TailoringJobListItem extends TailoringJob {
+  role: string | null;
+  company: string | null;
+  match_score: number | null;
   original_resume_download_url: string;
   tailored_resume_download_url: string | null;
+  tracked_job: TrackerLink | null;
+}
+
+export type Coverage = "covered" | "partial" | "missing";
+
+export interface DiffSegment {
+  text: string;
+  kind: "same" | "removed" | "added";
+}
+
+export interface TailoringChange {
+  id: string;
+  section: string;
+  source_label: string;
+  source_project_id: number | null;
+  original_segments: DiffSegment[];
+  tailored_segments: DiffSegment[];
+  reverted: boolean;
+}
+
+export interface RequirementCoverage {
+  requirement: string;
+  importance: "must" | "nice_to_have";
+  status: Coverage;
+  evidence: string;
+  action: "add_project" | "add_metric" | "none";
+}
+
+export interface KeywordCoverage {
+  label: string;
+  coverage: Coverage;
+}
+
+export interface TailoringResult extends TailoringJob {
+  role: string | null;
+  company: string | null;
+  job_description: string;
+  original_resume_download_url: string;
+  tailored_resume_download_url: string | null;
+  // False while a revert/re-apply re-render is in flight.
+  pdf_up_to_date: boolean;
+  has_analysis: boolean;
+  match_before: number | null;
+  match_after: number | null;
+  changes: TailoringChange[];
+  requirements: RequirementCoverage[];
+  keywords: KeywordCoverage[];
+  tracked_job: TrackerLink | null;
 }
 
 // Which step the error surfaced in, so the UI can decide what to restart
 // (e.g. an expired presigned URL means "go back to step 1", not "retry step 2").
-export type TailoringStep = "upload_url" | "upload" | "create_job" | "list_jobs";
+export type TailoringStep =
+  | "upload_url"
+  | "upload"
+  | "create_job"
+  | "list_jobs"
+  | "get_result"
+  | "set_change"
+  | "retry";
 
 export type TailoringErrorKind =
   | "unauthorized" // 401 — token missing/invalid/expired
   | "forbidden" // 403 — account inactive / missing auth
   | "validation" // 422 — bad request body (create_job only)
+  | "not_found" // 404 — run (or change) doesn't exist / isn't owned by this user
   | "upload_failed" // the presigned S3 PUT failed (expired URL, content-type mismatch, network)
   | "server_error" // 5xx or anything else unexpected
   | "network_error"; // fetch itself threw (offline, DNS, CORS, etc.)
@@ -96,6 +163,13 @@ async function apiRequest<T>(
       "forbidden",
       step,
       typeof detail === "string" ? detail : "Your account can't perform this action right now."
+    );
+  }
+  if (res.status === 404) {
+    throw new TailoringError(
+      "not_found",
+      step,
+      typeof detail === "string" ? detail : "This resume could not be found."
     );
   }
   if (res.status === 422) {
@@ -168,11 +242,41 @@ function listJobs(token: string): Promise<TailoringJobListItem[]> {
   });
 }
 
+function getResult(jobId: number, token: string): Promise<TailoringResult> {
+  return apiRequest<TailoringResult>(`/resume-tailoring/${jobId}/result`, "get_result", token, {
+    method: "GET",
+  });
+}
+
+function setChangeReverted(
+  jobId: number,
+  changeId: string,
+  reverted: boolean,
+  token: string
+): Promise<TailoringResult> {
+  return apiRequest<TailoringResult>(
+    `/resume-tailoring/${jobId}/changes/${encodeURIComponent(changeId)}`,
+    "set_change",
+    token,
+    { method: "PATCH", body: JSON.stringify({ reverted }) }
+  );
+}
+
+// Re-submits a failed run with the same CV and job description.
+function retryJob(jobId: number, token: string): Promise<TailoringJob> {
+  return apiRequest<TailoringJob>(`/resume-tailoring/${jobId}/retry`, "retry", token, {
+    method: "POST",
+  });
+}
+
 export const resumeTailoringApi = {
   getUploadUrl,
   uploadToS3,
   createJob,
   listJobs,
+  getResult,
+  setChangeReverted,
+  retryJob,
 };
 
 // Runs all three steps back to back. Callers that need per-step loading state

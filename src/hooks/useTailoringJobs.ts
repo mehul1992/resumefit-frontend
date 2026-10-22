@@ -8,8 +8,10 @@ interface TailoringJobsState {
   error: TailoringError | null;
 }
 
+const POLL_INTERVAL_MS = 5000;
+
 // Loads the current user's tailoring jobs, most recent first (as returned by
-// the API). Follows the same loading/error/auth pattern as useTailoringSubmit —
+// the API), re-polling quietly while any run is still pending/processing. Follows the same loading/error/auth pattern as useTailoringSubmit —
 // a 401 clears auth so ProtectedRoute redirects to /signin instead of this
 // hook navigating directly.
 export function useTailoringJobs() {
@@ -20,13 +22,13 @@ export function useTailoringJobs() {
     error: null,
   });
 
-  const fetchJobs = useCallback(async () => {
+  const fetchJobs = useCallback(async (options: { silent?: boolean } = {}) => {
     if (!token) {
       clearAuth();
       return;
     }
 
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    if (!options.silent) setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const jobs = await resumeTailoringApi.listJobs(token);
       setState({ jobs, loading: false, error: null });
@@ -52,5 +54,16 @@ export function useTailoringJobs() {
     fetchJobs();
   }, [fetchJobs]);
 
-  return { ...state, refetch: fetchJobs };
+  const inFlight = state.jobs.some((j) => j.status === "pending" || j.status === "processing");
+  useEffect(() => {
+    if (!inFlight || state.error) return;
+    const timer = setTimeout(() => fetchJobs({ silent: true }), POLL_INTERVAL_MS);
+    return () => clearTimeout(timer);
+  }, [inFlight, state.jobs, state.error, fetchJobs]);
+
+  const refetch = useCallback(() => fetchJobs(), [fetchJobs]);
+  // Reloads without the spinner — for updates after a row action.
+  const refresh = useCallback(() => fetchJobs({ silent: true }), [fetchJobs]);
+
+  return { ...state, refetch, refresh };
 }

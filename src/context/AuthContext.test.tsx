@@ -1,11 +1,23 @@
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { UserResponse } from "../api/auth";
 import { authApi } from "../api/auth";
+import { usersApi, UsersError } from "../api/users";
 import { AuthProvider, useAuth } from "./AuthContext";
 
 vi.mock("../api/auth", () => ({
   authApi: { logout: vi.fn().mockResolvedValue(undefined) },
+}));
+
+vi.mock("../api/users", () => ({
+  usersApi: { getMe: vi.fn() },
+  UsersError: class UsersError extends Error {
+    kind: string;
+    constructor(kind: string) {
+      super(kind);
+      this.kind = kind;
+    }
+  },
 }));
 
 const user: UserResponse = {
@@ -16,6 +28,9 @@ const user: UserResponse = {
   age: null,
   mobile_number: null,
   designation: null,
+  location: null,
+  linkedin_url: null,
+  avatar_url: null,
   is_active: true,
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
@@ -55,5 +70,28 @@ describe("AuthContext", () => {
 
     expect(authApi.logout).toHaveBeenCalledWith("token-123");
     expect(result.current.isAuthenticated).toBe(false);
+  });
+
+  it("refreshes the cached user from the API on load", async () => {
+    localStorage.setItem("rf_token", "token-123");
+    localStorage.setItem("rf_user", JSON.stringify(user));
+    vi.mocked(usersApi.getMe).mockResolvedValue({ ...user, location: "London" });
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await waitFor(() => expect(result.current.user?.location).toBe("London"));
+    expect(usersApi.getMe).toHaveBeenCalledWith("token-123");
+  });
+
+  it("signs out on load when the stored token is rejected", async () => {
+    localStorage.setItem("rf_token", "expired");
+    localStorage.setItem("rf_user", JSON.stringify(user));
+    vi.mocked(usersApi.getMe).mockRejectedValue(
+      new (UsersError as unknown as new (kind: string) => Error)("unauthorized")
+    );
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    await waitFor(() => expect(result.current.isAuthenticated).toBe(false));
   });
 });

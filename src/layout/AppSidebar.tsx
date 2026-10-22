@@ -43,6 +43,17 @@ const navItems: NavItem[] = [
       </svg>
     ),
   },
+  {
+    name: "Job Tracker",
+    path: "/tracker",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="4" width="5" height="16" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="10" y="4" width="5" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="17" y="4" width="4" height="13" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+      </svg>
+    ),
+  },
 ];
 
 const AppSidebar: React.FC = () => {
@@ -54,7 +65,8 @@ const AppSidebar: React.FC = () => {
   const subMenuRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   const isActive = useCallback(
-    (path: string) => location.pathname === path,
+    // Nested pages (e.g. /resumes/42) keep their section highlighted.
+    (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`),
     [location.pathname]
   );
 
