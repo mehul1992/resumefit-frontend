@@ -112,7 +112,7 @@ const AppSidebar: React.FC = () => {
             </svg>
           </div>
           {showLabel && (
-            <span className="text-lg font-bold text-gray-900 dark:text-white">ResumeFit</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-white">CVforTech</span>
           )}
         </Link>
       </div>

@@ -113,7 +113,7 @@ export default function ProjectsList() {
   return (
     <>
       <PageMeta
-        title="Projects | ResumeFit"
+        title="Projects | CVforTech"
         description="Reusable resume bullets used by the tailoring engine"
       />
       <PageBreadCrumb pageTitle="Projects" />

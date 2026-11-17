@@ -201,7 +201,7 @@ export default function ProcessedResumes() {
 
   return (
     <>
-      <PageMeta title="Processed Resumes | ResumeFit" description="View and download your tailored resumes" />
+      <PageMeta title="Processed Resumes | CVforTech" description="View and download your tailored resumes" />
       <PageBreadCrumb pageTitle="Processed Resumes" />
 
       {(error || actionError) && (

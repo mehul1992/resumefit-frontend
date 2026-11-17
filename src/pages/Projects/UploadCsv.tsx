@@ -174,7 +174,7 @@ export default function UploadCsv() {
 
   return (
     <>
-      <PageMeta title="Upload CSV | ResumeFit" description="Bulk import projects from a CSV file" />
+      <PageMeta title="Upload CSV | CVforTech" description="Bulk import projects from a CSV file" />
       <PageBreadCrumb pageTitle="Upload CSV" />
 
       <div className="mx-auto max-w-3xl">

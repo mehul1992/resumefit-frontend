@@ -142,7 +142,7 @@ export default function JobTracker() {
 
   return (
     <>
-      <PageMeta title="Job Tracker | ResumeFit" description="Track the jobs you're applying for" />
+      <PageMeta title="Job Tracker | CVforTech" description="Track the jobs you're applying for" />
       <PageBreadCrumb pageTitle="Job Tracker" />
 
       <div className="flex flex-col gap-5 text-sm">

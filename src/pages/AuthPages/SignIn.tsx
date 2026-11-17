@@ -6,8 +6,8 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="Sign In | ResumeFit - AI Resume Tailoring"
-        description="Sign in to your ResumeFit account and continue tailoring your resume with AI."
+        title="Sign In | CVforTech - AI Resume Tailoring"
+        description="Sign in to your CVforTech account and continue tailoring your resume with AI."
       />
       <AuthLayout>
         <SignInForm />

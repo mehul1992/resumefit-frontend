@@ -6,8 +6,8 @@ export default function SignUp() {
   return (
     <>
       <PageMeta
-        title="Create Your Account | ResumeFit - AI Resume Tailoring"
-        description="Sign up for ResumeFit and start tailoring your resume to every job description with AI."
+        title="Create Your Account | CVforTech - AI Resume Tailoring"
+        description="Sign up for CVforTech and start tailoring your resume to every job description with AI."
       />
       <AuthLayout>
         <SignUpForm />

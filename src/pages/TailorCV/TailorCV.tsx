@@ -319,7 +319,7 @@ export default function TailorCV() {
   if (submitted) {
     return (
       <>
-        <PageMeta title="Tailor CV | ResumeFit" description="Tailor your CV with AI" />
+        <PageMeta title="Tailor CV | CVforTech" description="Tailor your CV with AI" />
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           <div className="flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-success-50 dark:bg-success-500/15">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
@@ -343,7 +343,7 @@ export default function TailorCV() {
 
   return (
     <>
-      <PageMeta title="Tailor CV | ResumeFit" description="Tailor your CV to any job description with AI" />
+      <PageMeta title="Tailor CV | CVforTech" description="Tailor your CV to any job description with AI" />
       <PageBreadCrumb pageTitle="Tailor CV" />
 
       <div className="max-w-2xl mx-auto">

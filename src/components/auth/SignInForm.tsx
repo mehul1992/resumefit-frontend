@@ -68,7 +68,7 @@ export default function SignInForm() {
                 <path d="M7 10h6M7 13h4" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">ResumeFit</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">CVforTech</span>
           </div>
 
           <h1 className="mb-2 font-semibold text-gray-900 text-title-sm dark:text-white sm:text-title-md">

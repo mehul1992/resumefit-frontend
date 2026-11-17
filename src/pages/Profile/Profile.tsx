@@ -8,7 +8,7 @@ import DeleteAccountCard from "./DeleteAccountCard";
 export default function Profile() {
   return (
     <>
-      <PageMeta title="Profile | ResumeFit" description="Manage your ResumeFit profile and account" />
+      <PageMeta title="Profile | CVforTech" description="Manage your CVforTech profile and account" />
       <div className="max-w-[960px] text-sm">
         <PageBreadCrumb pageTitle="Profile" />
         <div className="flex flex-col gap-6">

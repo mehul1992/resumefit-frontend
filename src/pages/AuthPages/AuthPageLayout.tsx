@@ -58,7 +58,7 @@ export default function AuthLayout({
                   <path d="M7 10h6M7 13h4" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               </div>
-              <span className="text-2xl font-bold text-white">ResumeFit</span>
+              <span className="text-2xl font-bold text-white">CVforTech</span>
             </div>
 
             <h2 className="mb-3 text-2xl font-semibold text-center text-white">

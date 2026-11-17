@@ -165,7 +165,7 @@ export default function TailorResult() {
 
   return (
     <>
-      <PageMeta title={`${title} | ResumeFit`} description="Review the changes made to your tailored CV" />
+      <PageMeta title={`${title} | CVforTech`} description="Review the changes made to your tailored CV" />
       <Breadcrumb current={result.company ?? title} />
 
       <div className="flex flex-col gap-5 text-sm">

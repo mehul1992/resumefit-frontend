@@ -192,7 +192,7 @@ export default function ImportFromResume() {
   return (
     <>
       <PageMeta
-        title="Import from Resume | ResumeFit"
+        title="Import from Resume | CVforTech"
         description="Extract reusable project bullets from your resume"
       />
       <PageBreadCrumb pageTitle="Import from Resume" />
